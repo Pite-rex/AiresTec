@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportar Falla de Climatización - Tec Aires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
+</head>
+
+<body class="aa-body py-4">
+
+    <main class="container" style="max-width: 650px;">
+
+        <!-- Encabezado Institucional -->
+        <div class="text-center mb-4">
+            <div class="aa-badge">
+                <i class="bi bi-snow"></i>
+            </div>
+            <div class="aa-title">Mesa de Ayuda Tec Aires</div>
+            <div class="aa-subtitle">Reporte de incidencias y fallas en sistemas de climatización</div>
+        </div>
+
+        <!-- Tarjeta del equipo escaneado por QR -->
+        <div class="aa-panel mb-4">
+            <div class="aa-panel-header">
+                <h6><i class="bi bi-qr-code me-2"></i> Equipo Identificado por QR</h6>
+            </div>
+            <div class="aa-panel-body">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <span class="aa-folio d-block" style="font-size: 1.05rem;"
+                            th:text="${equipoFijo.codigoEquipo}"></span>
+                        <span class="aa-subtext"
+                            th:text="|${equipoFijo.marca} ${equipoFijo.modelo} (${equipoFijo.capacidadBtu} BTU)|"></span>
+                    </div>
+                    <span class="aa-tag aa-tag--neutral" th:text="${equipoFijo.tipoEquipo}"></span>
+                </div>
+                <hr class="aa-divider">
+                <div class="aa-info-item mb-0">
+                    <span class="aa-info-label"><i class="bi bi-geo-alt-fill me-1"></i>Ubicación</span>
+                    <span class="aa-info-value"
+                        th:text="|${equipoFijo.espacio.edificio.nombreEdificio} - ${equipoFijo.espacio.nombreEspacio}|"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de captura rápida -->
+        <div class="aa-panel">
+            <div class="aa-panel-body">
+                <form th:action="@{/reportes/guardar}" th:object="${reporte}" method="post">
+                    <input type="hidden" name="equipo.id" th:value="${equipoFijo.id}">
+                    <input type="hidden" name="esPublico" value="true">
+
+                    <div class="aa-section-title">Tus Datos de Contacto</div>
+
+                    <div class="aa-field-group">
+                        <label for="nombreSolicitante" class="aa-label">Nombre Completo</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-person"></i></span>
+                            <input type="text" id="nombreSolicitante" th:field="*{nombreSolicitante}" class="aa-input"
+                                placeholder="Ej: Mtro. Juan Gómez / Alumno Pedro" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 aa-field-group">
+                            <label for="correoSolicitante" class="aa-label">Correo Electrónico</label>
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-envelope"></i></span>
+                                <input type="email" id="correoSolicitante" th:field="*{correoSolicitante}"
+                                    class="aa-input" placeholder="correo@instituto.edu.mx" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 aa-field-group">
+                            <label for="telefonoSolicitante" class="aa-label">Teléfono / WhatsApp</label>
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" id="telefonoSolicitante" th:field="*{telefonoSolicitante}"
+                                    class="aa-input" placeholder="10 dígitos" maxlength="15">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aa-section-title">Detalles del Problema</div>
+
+                    <div class="aa-field-group">
+                        <label for="prioridad" class="aa-label">Severidad de la Falla</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-flag"></i></span>
+                            <select id="prioridad" th:field="*{prioridad}" class="aa-input" required>
+                                <option value="">-- Selecciona el nivel de urgencia --</option>
+                                <option th:each="p : ${prioridades}" th:value="${p}" th:text="${p}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="aa-field-group">
+                        <label for="descripcionFalla" class="aa-label">¿Qué problema presenta el equipo?</label>
+                        <div class="aa-input-wrap">
+                            <textarea id="descripcionFalla" th:field="*{descripcionFalla}" class="aa-input" rows="4"
+                                placeholder="Describe lo que ocurre (ej. emite aire tibio, gotea sobre los escritorios, huele a quemado...)"
+                                required></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="aa-btn aa-btn--dark">
+                        <i class="bi bi-send-fill"></i> Enviar Reporte de Falla
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="aa-footnote">Sistema de Gestión de Climatización &bull; Tec Aires</div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

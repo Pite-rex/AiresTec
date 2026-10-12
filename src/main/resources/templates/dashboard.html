@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Tec Aires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../static/css/estilos.css">
+</head>
+
+<body class="aa-body">
+
+    <!-- Navbar común -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main class="container-fluid px-3 px-md-4 my-4">
+
+        <div class="aa-page-header">
+            <div>
+                <h2 class="aa-page-title">Panel de Control</h2>
+                <p class="aa-page-subtitle mb-0">Avisos y reportes de mantenimiento en curso</p>
+            </div>
+            <div class="aa-actions">
+                <a href="/reportes/nuevo" class="aa-btn aa-btn--danger aa-btn--auto">
+                    <i class="bi bi-exclamation-octagon"></i> Nuevo Reporte
+                </a>
+                <!-- Botón Registrar Equipo -->
+                <a th:href="@{/equipos/nuevo}" class="aa-btn aa-btn--dark aa-btn--auto"
+
+                    sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'PERSONAL_SERVICIO_SOCIAL', 'ROLE_PERSONAL_SERVICIO_SOCIAL')">
+                    <i class="bi bi-plus-circle"></i> Registrar Equipo
+                </a>
+            </div>
+        </div>
+
+        <!-- Aviso: total de reportes -->
+        <div class="aa-avisos">
+            <div class="aa-avisos-icon">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+            <div>
+                <div class="aa-avisos-count" th:text="${totalReportes}">0</div>
+                <div class="aa-avisos-label">Reportes totales registrados en el sistema</div>
+            </div>
+        </div>
+
+        <!-- Tabla de Resumen de Reportes -->
+        <div class="aa-panel">
+            <div class="aa-panel-header">
+                <h6><i class="bi bi-list-task me-2"></i> Reportes Generales (Mesa de Ayuda)</h6>
+                <a href="/reportes" class="aa-btn aa-btn--ghost aa-btn--sm aa-btn--auto">Ver todos los tickets</a>
+            </div>
+            <div class="table-responsive">
+                <table class="aa-table">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Solicitante</th>
+                            <th>Prioridad</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="reporte : ${listadoReportes}">
+                            <td data-label="Folio" class="aa-folio" th:text="${reporte.folioReporte}"></td>
+                            <td data-label="Fecha"
+                                th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td data-label="Solicitante" th:text="${reporte.nombreSolicitante}"></td>
+                            <td data-label="Prioridad">
+                                <span class="aa-tag aa-tag--urgente"
+                                    th:if="${reporte.prioridad.name() == 'URGENTE'}">Urgente</span>
+                                <span class="aa-tag aa-tag--alta"
+                                    th:if="${reporte.prioridad.name() == 'ALTA'}">Alta</span>
+                                <span class="aa-tag aa-tag--media"
+                                    th:if="${reporte.prioridad.name() == 'MEDIA'}">Media</span>
+                                <span class="aa-tag aa-tag--baja"
+                                    th:if="${reporte.prioridad.name() == 'BAJA'}">Baja</span>
+                            </td>
+                            <td data-label="Estado">
+                                <span class="aa-tag aa-tag--pendiente"
+                                    th:if="${reporte.estadoReporte.name() == 'PENDIENTE'}">Pendiente</span>
+                                <span class="aa-tag aa-tag--proceso"
+                                    th:if="${reporte.estadoReporte.name() == 'EN_PROCESO'}">En Proceso</span>
+                                <span class="aa-tag aa-tag--atendido"
+                                    th:if="${reporte.estadoReporte.name() == 'ATENDIDO'}">Atendido</span>
+                            </td>
+                            <td data-label="Acción" class="aa-td-accion text-end">
+                                <a th:href="@{/reportes/detalle/{id}(id=${reporte.id})}"
+                                    class="aa-btn aa-btn--dark aa-btn--sm aa-btn--auto">Revisar</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(listadoReportes)}">
+                            <td colspan="6" class="aa-table-empty">No hay reportes registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

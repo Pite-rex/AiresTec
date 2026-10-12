@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Bitácora de Mantenimiento - Tec Aires</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
+</head>
+
+<body class="aa-body">
+	<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+	<main class="container-fluid px-3 px-md-4 my-4">
+
+		<div class="aa-page-header">
+			<div>
+				<h2 class="aa-page-title">Bitácora de Mantenimiento</h2>
+				<p class="aa-page-subtitle mb-0">Historial de intervenciones técnicas de los equipos de aire acondicionado</p>
+			</div>
+			<div class="aa-actions">
+				<a th:href="@{/mantenimientos/nuevo}" class="aa-btn aa-btn--dark aa-btn--auto">
+					<i class="bi bi-plus-circle"></i> Registrar Mantenimiento
+				</a>
+			</div>
+		</div>
+
+		<!-- Alertas de notificación -->
+		<div th:if="${exito}" class="aa-alert aa-alert--success aa-alert--dismissible">
+			<span th:text="${exito}"></span>
+			<button type="button" class="aa-alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+		</div>
+		<div th:if="${error}" class="aa-alert aa-alert--danger aa-alert--dismissible">
+			<span th:text="${error}"></span>
+			<button type="button" class="aa-alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+		</div>
+
+		<!-- Tarjetas resumen -->
+		<div class="row g-3 mb-4">
+			<div class="col-md-6">
+				<div class="aa-avisos mb-0">
+					<div class="aa-avisos-icon"><i class="bi bi-journal-check"></i></div>
+					<div>
+						<div class="aa-avisos-count" th:text="${mantenimientos != null ? #lists.size(mantenimientos) : 0}">0</div>
+						<div class="aa-avisos-label">Intervenciones encontradas</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="aa-avisos mb-0">
+					<div class="aa-avisos-icon"><i class="bi bi-cash-coin"></i></div>
+					<div>
+						<div class="aa-avisos-count"
+							th:text="${costoTotalAcumulado != null ? '$' + #numbers.formatDecimal(costoTotalAcumulado, 1, 'COMMA', 2, 'POINT') : '$0.00'}">$0.00</div>
+						<div class="aa-avisos-label">Costo acumulado (MXN)</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Filtros -->
+		<form th:action="@{/mantenimientos}" method="get" class="aa-filter-bar">
+			<div class="aa-filter-item">
+				<label for="filtroEquipo" class="aa-filter-label">Equipo</label>
+				<div class="aa-input-wrap">
+					<select name="equipoId" id="filtroEquipo" class="aa-input" onchange="this.form.submit()">
+						<option value="">-- Todos los equipos --</option>
+						<option th:each="equipoItem : ${equipos}" th:if="${equipoItem != null}"
+							th:value="${equipoItem.id}"
+							th:text="${equipoItem.codigoEquipo + ' | ' + equipoItem.marca + ' ' + equipoItem.modelo}"
+							th:selected="${equipoItem.id == equipoSeleccionado}"></option>
+					</select>
+				</div>
+			</div>
+			<div class="aa-filter-item">
+				<label for="filtroTipo" class="aa-filter-label">Tipo</label>
+				<div class="aa-input-wrap">
+					<select name="tipo" id="filtroTipo" class="aa-input" onchange="this.form.submit()">
+						<option value="">-- Todos los tipos --</option>
+						<option th:each="tipoItem : ${tipos}" th:if="${tipoItem != null}" th:value="${tipoItem}"
+							th:text="${tipoItem.name() == 'PREVENTIVO' ? 'Preventivo' : 'Correctivo'}"
+							th:selected="${tipoItem == tipoSeleccionado}"></option>
+					</select>
+				</div>
+			</div>
+			<a th:if="${equipoSeleccionado != null or tipoSeleccionado != null}"
+				th:href="@{/mantenimientos}" class="aa-btn aa-btn--outline-dark aa-btn--auto aa-btn--sm">Limpiar Filtros</a>
+		</form>
+
+		<!-- Tabla de intervenciones -->
+		<div class="aa-panel">
+			<div class="table-responsive">
+				<table class="aa-table">
+					<thead>
+						<tr>
+							<th>Fecha / Tipo</th>
+							<th>Equipo intervenido</th>
+							<th>Trabajo y responsable</th>
+							<th>Estado final</th>
+							<th class="text-end">Costo</th>
+							<th class="text-end">Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="mantenimiento : ${mantenimientos}" th:if="${mantenimiento != null}">
+							<td data-label="Fecha">
+								<span class="aa-folio"
+									th:text="${mantenimiento.fechaMantenimiento != null ? #temporals.format(mantenimiento.fechaMantenimiento, 'dd/MM/yyyy') : 'Sin fecha'}">Sin fecha</span>
+								<br>
+								<span th:if="${mantenimiento.tipoMantenimiento != null and mantenimiento.tipoMantenimiento.name() == 'PREVENTIVO'}"
+									class="aa-tag aa-tag--media">Preventivo</span>
+								<span th:if="${mantenimiento.tipoMantenimiento != null and mantenimiento.tipoMantenimiento.name() == 'CORRECTIVO'}"
+									class="aa-tag aa-tag--alta">Correctivo</span>
+							</td>
+							<td data-label="Equipo">
+								<a th:if="${mantenimiento.equipo != null and mantenimiento.equipo.id != null}"
+									th:href="@{/equipos/detalle/{id}(id=${mantenimiento.equipo.id})}"
+									class="aa-folio" style="text-decoration:none;"
+									th:text="${mantenimiento.equipo.codigoEquipo}">Equipo</a>
+								<span th:if="${mantenimiento.equipo == null or mantenimiento.equipo.id == null}"
+									class="aa-subtext">Sin equipo asociado</span>
+								<span th:if="${mantenimiento.equipo != null}" class="aa-subtext"
+									th:text="${mantenimiento.equipo.marca + ' ' + mantenimiento.equipo.modelo}"></span>
+								<span th:if="${mantenimiento.equipo != null and mantenimiento.equipo.espacio != null}" class="aa-subtext"
+									th:text="${mantenimiento.equipo.espacio.edificio != null ? mantenimiento.equipo.espacio.edificio.nombreEdificio + ' - ' + mantenimiento.equipo.espacio.nombreEspacio : mantenimiento.equipo.espacio.nombreEspacio}"></span>
+							</td>
+							<td data-label="Trabajo">
+								<span th:text="${mantenimiento.tecnicoResponsable ?: 'Responsable no indicado'}">Responsable no indicado</span>
+								<span class="aa-subtext d-block text-truncate" style="max-width: 320px;"
+									th:text="${mantenimiento.descripcionTrabajo ?: 'Sin descripción del trabajo'}">Sin descripción del trabajo</span>
+								<a th:if="${mantenimiento.reporte != null and mantenimiento.reporte.id != null}"
+									th:href="@{/reportes/detalle/{id}(id=${mantenimiento.reporte.id})}"
+									class="aa-link-chip"
+									th:text="${'Ticket ' + mantenimiento.reporte.folioReporte}">Ticket asociado</a>
+							</td>
+							<td data-label="Estado">
+								<span th:if="${mantenimiento.estadoFinalEquipo != null and mantenimiento.estadoFinalEquipo.name() == 'OPERATIVO'}"
+									class="aa-tag aa-tag--atendido">Operativo</span>
+								<span th:if="${mantenimiento.estadoFinalEquipo != null and mantenimiento.estadoFinalEquipo.name() == 'EN_MANTENIMIENTO'}"
+									class="aa-tag aa-tag--pendiente">En mantenimiento</span>
+								<span th:if="${mantenimiento.estadoFinalEquipo != null and mantenimiento.estadoFinalEquipo.name() == 'FUERA_DE_SERVICIO'}"
+									class="aa-tag aa-tag--urgente">Fuera de servicio</span>
+								<span th:if="${mantenimiento.estadoFinalEquipo != null and mantenimiento.estadoFinalEquipo.name() == 'BAJA'}"
+									class="aa-tag aa-tag--dark">Baja</span>
+								<span th:if="${mantenimiento.estadoFinalEquipo == null}" class="aa-tag aa-tag--neutral">Sin indicar</span>
+							</td>
+							<td data-label="Costo" class="text-end">
+								<span th:if="${mantenimiento.costoTotal != null}"
+									th:text="${'$' + #numbers.formatDecimal(mantenimiento.costoTotal, 1, 'COMMA', 2, 'POINT')}">$0.00</span>
+								<span th:if="${mantenimiento.costoTotal == null}" class="aa-subtext">Sin costo</span>
+							</td>
+							<td data-label="Acciones" class="aa-td-accion">
+								<div class="aa-row-actions">
+									<a th:if="${mantenimiento.id != null}"
+										th:href="@{/mantenimientos/detalle/{id}(id=${mantenimiento.id})}"
+										class="aa-action-btn aa-action-btn--info" title="Ver hoja de servicio">
+										<i class="bi bi-eye"></i> Ver
+									</a>
+									<a th:if="${mantenimiento.id != null}"
+										th:href="@{/mantenimientos/eliminar/{id}(id=${mantenimiento.id})}"
+										class="aa-action-btn aa-action-btn--danger aa-action-btn--icon" title="Eliminar registro"
+										onclick="return confirm('¿Está seguro de eliminar este registro de mantenimiento?');">
+										<i class="bi bi-trash"></i>
+									</a>
+								</div>
+							</td>
+						</tr>
+						<tr th:if="${mantenimientos == null or #lists.isEmpty(mantenimientos)}">
+							<td colspan="6" class="aa-table-empty">No se encontraron mantenimientos con los filtros actuales.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

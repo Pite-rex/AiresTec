@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${'Detalle de Reporte ' + reporte.folioReporte}">Detalle del Reporte - Tec Aires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
+</head>
+
+<body class="aa-body">
+
+    <!-- Navbar común -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main class="container my-5" style="max-width: 900px;">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div>
+                <a href="/reportes" class="aa-back-link">
+                    <i class="bi bi-arrow-left"></i> Regresar a mesa de ayuda
+                </a>
+                <h3 class="aa-page-title mt-1 mb-0">Ticket de Incidencia</h3>
+            </div>
+            <span class="aa-tag aa-tag--neutral aa-tag--lg" th:text="${reporte.folioReporte}"></span>
+        </div>
+
+        <!-- Alertas de notificación -->
+        <div th:if="${exito}" class="aa-alert aa-alert--success aa-alert--dismissible">
+            <span th:text="${exito}"></span>
+            <button type="button" class="aa-alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+        </div>
+        <div th:if="${error}" class="aa-alert aa-alert--danger aa-alert--dismissible">
+            <span th:text="${error}"></span>
+            <button type="button" class="aa-alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <div class="row g-4">
+            <!-- Columna Principal: Datos del Ticket -->
+            <div class="col-lg-8">
+                <div class="aa-panel mb-4">
+                    <div class="aa-panel-header">
+                        <h6><i class="bi bi-ticket-detailed me-2"></i> Información del Reporte</h6>
+                        <span th:if="${reporte.prioridad.name() == 'BAJA'}" class="aa-tag aa-tag--baja">Prioridad Baja</span>
+                        <span th:if="${reporte.prioridad.name() == 'MEDIA'}" class="aa-tag aa-tag--media">Prioridad Media</span>
+                        <span th:if="${reporte.prioridad.name() == 'ALTA'}" class="aa-tag aa-tag--alta">Prioridad Alta</span>
+                        <span th:if="${reporte.prioridad.name() == 'URGENTE'}" class="aa-tag aa-tag--urgente">Prioridad Urgente</span>
+                    </div>
+
+                    <div class="aa-panel-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6 aa-info-item">
+                                <span class="aa-info-label">Fecha y Hora de Recepción</span>
+                                <span class="aa-info-value" th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></span>
+                            </div>
+                            <div class="col-sm-6 aa-info-item">
+                                <span class="aa-info-label">Estado del Ticket</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'PENDIENTE'}" class="aa-tag aa-tag--pendiente">Pendiente</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'EN_PROCESO'}" class="aa-tag aa-tag--proceso">En Proceso</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'ATENDIDO'}" class="aa-tag aa-tag--atendido">Atendido</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'CANCELADO'}" class="aa-tag aa-tag--neutral">Cancelado</span>
+                            </div>
+                        </div>
+
+                        <div class="aa-section-title">
+                            <i class="bi bi-person-lines-fill me-1"></i> Datos del Solicitante
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6 aa-info-item">
+                                <span class="aa-info-label">Nombre</span>
+                                <span class="aa-info-value" th:text="${reporte.nombreSolicitante}"></span>
+                            </div>
+                            <div class="col-sm-6 aa-info-item">
+                                <span class="aa-info-label">Correo de Contacto</span>
+                                <span class="aa-info-value" th:text="${reporte.correoSolicitante ?: 'No especificado'}"></span>
+                            </div>
+                            <div class="col-sm-6 aa-info-item">
+                                <span class="aa-info-label">Teléfono / Extensión</span>
+                                <span class="aa-info-value" th:text="${reporte.telefonoSolicitante ?: 'No especificado'}"></span>
+                            </div>
+                        </div>
+
+                        <div class="aa-section-title">
+                            <i class="bi bi-exclamation-triangle me-1"></i> Descripción de la Falla
+                        </div>
+                        <div class="aa-desc-box">
+                            <p class="mb-0" th:text="${reporte.descripcionFalla}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Lateral: Equipo y Gestión de Estado -->
+            <div class="col-lg-4">
+                <!-- Tarjeta del Equipo Asociado -->
+                <div class="aa-panel mb-4">
+                    <div class="aa-panel-header aa-panel-header--accent">
+                        <h6><i class="bi bi-snow me-1"></i> Equipo Afectado</h6>
+                    </div>
+                    <div class="aa-panel-body">
+                        <div class="aa-info-value mb-1" th:text="${reporte.equipo.codigoEquipo}"></div>
+                        <div class="aa-subtext mb-2" th:text="${reporte.equipo.marca + ' ' + reporte.equipo.modelo}"></div>
+
+                        <hr class="aa-divider">
+
+                        <div class="aa-info-item">
+                            <span class="aa-info-label">Edificio</span>
+                            <span class="aa-info-value" th:text="${reporte.equipo.espacio.edificio.nombreEdificio}"></span>
+                        </div>
+                        <div class="aa-info-item">
+                            <span class="aa-info-label">Aula / Espacio</span>
+                            <span class="aa-info-value" th:text="${reporte.equipo.espacio.nombreEspacio}"></span>
+                        </div>
+                        <div class="aa-info-item">
+                            <span class="aa-info-label">Capacidad</span>
+                            <span class="aa-info-value" th:text="${reporte.equipo.capacidadBtu + ' BTU'}"></span>
+                        </div>
+
+                        <div class="d-flex flex-column gap-2 mt-3">
+                            <a th:href="@{/equipos/detalle/{id}(id=${reporte.equipo.id})}" class="aa-btn aa-btn--outline-dark">
+                                <i class="bi bi-file-earmark-text"></i> Ver Ficha Técnica
+                            </a>
+                            <a th:href="@{/mantenimientos/nuevo/{id}(id=${reporte.id})}" class="aa-btn aa-btn--success">
+                                <i class="bi bi-clipboard-check"></i> Cerrar con Bitácora Técnica
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Actualización de Estado -->
+                <div class="aa-panel">
+                    <div class="aa-panel-header aa-panel-header--light">
+                        <h6><i class="bi bi-sliders me-1"></i> Cambiar Estado</h6>
+                    </div>
+                    <div class="aa-panel-body">
+                        <form th:action="@{/reportes/cambiar-estado}" method="post">
+                            <input type="hidden" name="id" th:value="${reporte.id}">
+                            <div class="aa-field-group">
+                                <label for="nuevoEstado" class="aa-label">Nuevo Estado del Ticket</label>
+                                <div class="aa-input-wrap">
+                                    <select name="nuevoEstado" id="nuevoEstado" class="aa-input" required>
+                                        <option th:each="est : ${estados}" th:value="${est}" th:text="${est}"
+                                            th:selected="${est == reporte.estadoReporte}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="aa-btn aa-btn--dark aa-btn--sm">
+                                <i class="bi bi-arrow-repeat"></i> Actualizar Estado
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

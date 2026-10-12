@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${'Etiqueta QR - ' + equipo.codigoEquipo}">Etiqueta QR - Tec Aires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
+    <style>
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            display: block;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background-color: #ffffff !important;
+                margin: 0;
+                padding: 0;
+            }
+
+            .aa-panel {
+                border: 2px solid #000 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body class="aa-body py-4">
+
+    <div class="container d-flex flex-column align-items-center">
+
+        <!-- Botones de Acción (Se ocultan al imprimir) -->
+        <div class="no-print d-flex gap-2 mb-4">
+            <a th:href="@{/equipos/detalle/{id}(id=${equipo.id})}"
+                class="aa-btn aa-btn--outline-dark aa-btn--auto aa-btn--sm">
+                <i class="bi bi-arrow-left"></i> Regresar
+            </a>
+            <button onclick="window.print();" class="aa-btn aa-btn--dark aa-btn--auto aa-btn--sm">
+                <i class="bi bi-printer"></i> Imprimir Etiqueta
+            </button>
+        </div>
+
+        <!-- Tarjeta de Etiqueta Física Institucional (ART-07) -->
+        <div class="aa-panel p-3" style="width: 100%; max-width: 500px;">
+            <div class="text-center pb-2 mb-3" style="border-bottom: var(--aa-border-thin);">
+                <div class="fw-bold text-uppercase" style="letter-spacing: 0.03em;">Instituto Tecnológico</div>
+                <div class="aa-subtext">Control de Aire Acondicionado (Tec Aires)</div>
+            </div>
+
+            <div class="row g-2 align-items-center">
+                <div class="col-7">
+                    <div class="aa-info-item">
+                        <span class="aa-info-label">Código Institucional</span>
+                        <span class="aa-info-value" style="font-size: 1.05rem;" th:text="${equipo.codigoEquipo}"></span>
+                    </div>
+                    <div class="aa-info-item">
+                        <span class="aa-info-label">Serie</span>
+                        <span class="aa-info-value" th:text="${equipo.numeroSerie}"></span>
+                    </div>
+                    <div class="aa-info-item">
+                        <span class="aa-info-label">Equipo</span>
+                        <span class="aa-info-value"
+                            th:text="${equipo.marca + ' ' + equipo.modelo + ' (' + equipo.tipoEquipo + ')'}"></span>
+                    </div>
+                    <div class="aa-info-item">
+                        <span class="aa-info-label">Capacidad / Gas</span>
+                        <span class="aa-info-value"
+                            th:text="${equipo.capacidadBtu + ' BTU | ' + equipo.gasRefrigerante}"></span>
+                    </div>
+                    <div class="aa-info-item mb-0" style="border-top: var(--aa-border-thin); padding-top: 0.5rem;">
+                        <span class="aa-info-label">Ubicación</span>
+                        <span class="aa-info-value"
+                            th:text="${equipo.espacio.edificio.nombreEdificio + ' - ' + equipo.espacio.nombreEspacio}"></span>
+                    </div>
+                </div>
+
+                <div class="col-5 text-center">
+                    <div class="aa-qr-box">
+                        <img th:src="@{/equipos/qr/{id}(id=${equipo.id})}" alt="Código QR del Equipo" class="qr-image">
+                    </div>
+                    <span class="aa-subtext d-block mt-1">Escanear para Ficha / Reporte</span>
+                </div>
+            </div>
+
+            <div class="text-center mt-3 pt-2 aa-subtext" style="border-top: var(--aa-border-thin);">
+                Propiedad Institucional &bull; Mantener etiqueta visible
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

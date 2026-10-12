@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${esEdicion} ? 'Editar Usuario - Tec Aires' : 'Registrar Usuario - Tec Aires'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
+</head>
+
+<body class="aa-body">
+
+    <!-- Navbar común -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main class="container my-5" style="max-width: 650px;">
+        <div class="aa-panel">
+            <div class="aa-panel-header">
+                <h6 th:text="${esEdicion} ? 'Editar Usuario / Personal' : 'Registrar Nuevo Usuario / Personal'"></h6>
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <div class="aa-panel-body">
+                <form id="registroUsuarioForm" th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+                    <input type="hidden" th:field="*{id}">
+
+                    <!-- Nombre de Usuario (Login) -->
+                    <div class="aa-field-group">
+                        <label for="username" class="aa-label">Nombre de Usuario (Username)</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-person"></i></span>
+                            <input type="text" id="username" th:field="*{username}" class="aa-input"
+                                placeholder="Ej: jperez" required th:readonly="${esEdicion}">
+                        </div>
+                        <div th:if="${esEdicion}" class="aa-form-hint">El nombre de usuario no se puede modificar tras ser creado.</div>
+                    </div>
+
+                    <!-- Contraseñas -->
+                    <div class="row">
+                        <div class="col-md-6 aa-field-group">
+                            <label for="password" class="aa-label">Contraseña</label>
+                            <div class="aa-input-wrap" id="passwordWrap">
+                                <span class="aa-input-icon"><i class="bi bi-lock"></i></span>
+                                <input type="password" id="password" th:field="*{password}" class="aa-input"
+                                    placeholder="Mínimo 8 caracteres" th:required="${!esEdicion}" minlength="8" maxlength="20">
+                                <button class="aa-input-toggle toggle-password" type="button" data-target="password">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 aa-field-group">
+                            <label for="confirmPassword" class="aa-label">Confirmar Contraseña</label>
+                            <div class="aa-input-wrap" id="confirmPasswordWrap">
+                                <span class="aa-input-icon"><i class="bi bi-lock"></i></span>
+                                <input type="password" id="confirmPassword" class="aa-input"
+                                    placeholder="Repite la contraseña" th:required="${!esEdicion}" minlength="8" maxlength="20">
+                                <button class="aa-input-toggle toggle-password" type="button" data-target="confirmPassword">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <!-- Aquí se mostrarán las advertencias de seguridad -->
+                            <div id="passwordError" class="aa-field-error" style="display: none;"></div>
+                            <div th:if="${esEdicion}" class="aa-form-hint">Dejar en blanco si desea conservar la contraseña actual.</div>
+                        </div>
+                    </div>
+
+                    <!-- Rol Asignado -->
+                    <div class="aa-field-group">
+                        <label for="rol" class="aa-label">Rol de Acceso</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-shield-check"></i></span>
+                            <select id="rol" th:field="*{rol}" class="aa-input" required>
+                                <option value="">-- Selecciona un Rol --</option>
+                                <option th:each="r : ${roles}" th:value="${r}"
+                                    th:text="${r.name() == 'ADMINISTRADOR' ? 'Administrador' : (r.name() == 'TECNICO' ? 'Técnico' : 'Personal de Servicio Social')}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Teléfono de Contacto -->
+                    <div class="aa-field-group">
+                        <label for="telefono" class="aa-label">Teléfono de Contacto</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-telephone"></i></span>
+                            <input type="tel" id="telefono" th:field="*{telefono}" class="aa-input"
+                                placeholder="10 dígitos" pattern="[0-9]{10}" maxlength="10">
+                        </div>
+                    </div>
+
+                    <div class="aa-form-actions">
+                        <a href="/usuarios" class="aa-btn aa-btn--outline-dark aa-btn--auto">Cancelar</a>
+                        <button type="submit" id="btnGuardar" class="aa-btn aa-btn--dark aa-btn--auto">
+                            <i class="bi bi-save"></i> Guardar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para validación y visibilidad de contraseñas -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mostrar/Ocultar contraseñas
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.replace('bi-eye', 'bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.replace('bi-eye-slash', 'bi-eye');
+                    }
+                });
+            });
+
+            // Validación de seguridad y coincidencia
+            const form = document.getElementById('registroUsuarioForm');
+            const passInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirmPassword');
+            const passWrap = document.getElementById('passwordWrap');
+            const confirmWrap = document.getElementById('confirmPasswordWrap');
+            const errorDiv = document.getElementById('passwordError');
+            const btnGuardar = document.getElementById('btnGuardar');
+
+            function marcarEstado(wrap, estado) {
+                wrap.classList.remove('aa-input-wrap--invalid', 'aa-input-wrap--valid');
+                if (estado) wrap.classList.add(estado);
+            }
+
+            function validarContrasenas() {
+                const pass = passInput.value;
+                const confirm = confirmInput.value;
+                const esEdicion = !passInput.hasAttribute('required');
+
+                // Si es edición y ambos están vacíos, es válido (no se cambia la contraseña)
+                if (esEdicion && pass === '' && confirm === '') {
+                    errorDiv.style.display = 'none';
+                    marcarEstado(passWrap, null);
+                    marcarEstado(confirmWrap, null);
+                    btnGuardar.disabled = false;
+                    return true;
+                }
+
+                // Estándar básico: mínimo 8 caracteres, al menos un número y una mayúscula
+                const esSegura = /^(?=.*[A-Z])(?=.*\d).{8,20}$/.test(pass);
+                const coinciden = pass === confirm;
+
+                if (!esSegura || !coinciden) {
+                    marcarEstado(passWrap, 'aa-input-wrap--invalid');
+                    marcarEstado(confirmWrap, 'aa-input-wrap--invalid');
+                    errorDiv.style.display = 'block';
+                    btnGuardar.disabled = true;
+
+                    if (!esSegura) {
+                        errorDiv.textContent = 'La contraseña debe tener entre 8 y 20 caracteres, incluir al menos un número y una letra mayúscula.';
+                    } else if (!coinciden) {
+                        errorDiv.textContent = 'Las contraseñas no coinciden.';
+                    }
+                    return false;
+                } else {
+                    marcarEstado(passWrap, 'aa-input-wrap--valid');
+                    marcarEstado(confirmWrap, 'aa-input-wrap--valid');
+                    errorDiv.style.display = 'none';
+                    btnGuardar.disabled = false;
+                    return true;
+                }
+            }
+
+            passInput.addEventListener('input', validarContrasenas);
+            confirmInput.addEventListener('input', validarContrasenas);
+
+            form.addEventListener('submit', function (event) {
+                if (!validarContrasenas()) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

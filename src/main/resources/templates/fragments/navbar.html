@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+
+<body>
+
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark aa-navbar">
+        <div class="container-fluid px-2">
+            <a class="aa-navbar-brand" href="/dashboard">
+                <i class="bi bi-snow2 fs-4"></i>
+                <span>Tec Aires</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido"
+                aria-controls="navbarContenido" aria-expanded="false" aria-label="Alternar navegación">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContenido">
+                <!-- Menú Principal -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-1">
+
+                    <!-- 1. Panel / Dashboard (Visible para cualquier usuario autenticado) -->
+                    <li class="nav-item">
+                        <a class="nav-link aa-nav-link" th:href="@{/dashboard}">
+                            <i class="bi bi-speedometer2 me-1"></i> Panel de Control
+                        </a>
+                    </li>
+
+                    <!-- 2. Edificios y Aulas (EXCLUSIVO ADMINISTRADOR - ACT-01) -->
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR')">
+                        <a class="nav-link aa-nav-link" th:href="@{/edificios}">
+                            <i class="bi bi-building me-1"></i> Edificios y Aulas
+                        </a>
+                    </li>
+
+                    <!-- 3. Equipos A/A (ADMINISTRADOR y PERSONAL DE SERVICIO SOCIAL - ACT-01 y ACT-03) -->
+                    <li class="nav-item"
+                        sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'PERSONAL_SERVICIO_SOCIAL', 'ROLE_PERSONAL_SERVICIO_SOCIAL')">
+                        <a class="nav-link aa-nav-link" th:href="@{/equipos}">
+                            <i class="bi bi-laptop me-1"></i> Equipos A/A
+                        </a>
+                    </li>
+
+                    <!-- 4. Reportes / Tickets (TODOS LOS ROLES) -->
+                    <li class="nav-item"
+                        sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'TECNICO', 'ROLE_TECNICO', 'PERSONAL_SERVICIO_SOCIAL', 'ROLE_PERSONAL_SERVICIO_SOCIAL')">
+                        <a class="nav-link aa-nav-link" th:href="@{/reportes}">
+                            <i class="bi bi-ticket-perforated me-1"></i> Reportes
+                        </a>
+                    </li>
+
+                    <!-- 5. Bitácora Mantenimiento (TODOS LOS ROLES) -->
+                    <li class="nav-item"
+                        sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'TECNICO', 'ROLE_TECNICO', 'PERSONAL_SERVICIO_SOCIAL', 'ROLE_PERSONAL_SERVICIO_SOCIAL')">
+                        <a class="nav-link aa-nav-link" th:href="@{/mantenimientos}">
+                            <i class="bi bi-wrench me-1"></i> Bitácora Mantenimiento
+                        </a>
+                    </li>
+
+                    <!-- 6. Usuarios (EXCLUSIVO ADMINISTRADOR - ACT-01) -->
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR')">
+                        <a class="nav-link aa-nav-link" th:href="@{/usuarios}">
+                            <i class="bi bi-person me-1"></i> Usuarios
+                        </a>
+                    </li>
+
+                </ul>
+
+                <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                    <span class="aa-navbar-user" sec:authorize="isAuthenticated()">
+                        <i class="bi bi-person-circle me-1"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </span>
+                    <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" class="d-inline mb-0">
+                        <button type="submit" class="aa-btn aa-btn--danger aa-btn--sm aa-btn--auto">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Mantenimiento - Tec Aires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
+</head>
+
+<body class="aa-body">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main class="container my-5" style="max-width: 800px;">
+        <div class="aa-panel">
+            <div class="aa-panel-header">
+                <h6>Registro de Intervención Técnica / Hoja de Servicio</h6>
+                <i class="bi bi-tools"></i>
+            </div>
+            <div class="aa-panel-body">
+                <form th:action="@{/mantenimientos/guardar}" th:object="${mantenimiento}" method="post">
+                    <input type="hidden" th:field="*{id}" />
+
+                    <div class="aa-section-title">1. Equipo y Tipo de Servicio</div>
+
+                    <div class="aa-field-group">
+                        <label for="edificioFiltro" class="aa-label">Edificio</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-buildings"></i></span>
+                            <select id="edificioFiltro" class="aa-input">
+                                <option value="">-- Todos los Edificios --</option>
+                                <option th:each="edif : ${edificios}" th:value="${edif.id}"
+                                    th:text="${edif.claveEdificio + ' - ' + edif.nombreEdificio}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="aa-field-group">
+                        <label for="equipoSelect" class="aa-label">Equipo Intervenido</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-hdd-network"></i></span>
+                            <select id="equipoSelect" name="equipo.id" class="aa-input" required>
+                                <option value="">-- Selecciona el Aire Acondicionado --</option>
+                                <option th:each="equipoItem : ${equipos}" th:value="${equipoItem.id}"
+                                    th:text="${equipoItem.codigoEquipo} + (${equipoItem.espacio} != null ? ' - ' + ${equipoItem.espacio.nombreEspacio} : '')"
+                                    th:attr="data-edificio=${equipoItem.espacio != null ? equipoItem.espacio.edificio.id : ''}"
+                                    th:selected="${mantenimiento.equipo != null and mantenimiento.equipo.id == equipoItem.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 aa-field-group">
+                            <label for="tipoMantenimiento" class="aa-label">Tipo de Intervención</label>
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-wrench-adjustable"></i></span>
+                                <select id="tipoMantenimiento" th:field="*{tipoMantenimiento}" class="aa-input"
+                                    required>
+                                    <option th:each="t : ${tipos}" th:value="${t}" th:text="${t.name()}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 aa-field-group">
+                            <label for="fechaMantenimiento" class="aa-label">Fecha de Realización</label>
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-calendar-event"></i></span>
+                                <input type="date" id="fechaMantenimiento" th:field="*{fechaMantenimiento}"
+                                    class="aa-input" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aa-section-title">2. Detalle de los Trabajos</div>
+
+                    <div class="aa-field-group">
+                        <label for="tecnicoResponsable" class="aa-label">Técnico Responsable</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-person-gear"></i></span>
+                            <input type="text" id="tecnicoResponsable" th:field="*{tecnicoResponsable}" class="aa-input"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class="aa-field-group">
+                        <label for="descripcionTrabajo" class="aa-label">Descripción del Servicio</label>
+                        <div class="aa-input-wrap">
+                            <textarea id="descripcionTrabajo" th:field="*{descripcionTrabajo}" class="aa-input" rows="3"
+                                required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="aa-section-title">3. Refacciones y Costo</div>
+
+                    <div class="aa-field-group">
+                        <label for="refaccionesUtilizadas" class="aa-label">Refacciones Utilizadas</label>
+                        <div class="aa-combo">
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-boxes"></i></span>
+                                <input type="text" id="refaccionesUtilizadas" th:field="*{refaccionesUtilizadas}"
+                                    class="aa-input" placeholder="Escribe libremente o elige de la lista">
+                                <button type="button" class="aa-input-toggle" id="refaccionesToggle"
+                                    title="Elegir de la lista">
+                                    <i class="bi bi-list-check"></i>
+                                </button>
+                            </div>
+                            <div class="aa-combo-panel" id="refaccionesPanel">
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Filtro de aire">Filtro de aire
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Capacitor">Capacitor
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Contactor">Contactor
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Gas refrigerante R-410A">Gas refrigerante R-410A
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Gas refrigerante R-22">Gas refrigerante R-22
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Tarjeta electrónica (PCB)">Tarjeta electrónica (PCB)
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Motor ventilador">Motor ventilador
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Termostato">Termostato
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Válvula de expansión">Válvula de expansión
+                                </label>
+                                <label class="aa-combo-option">
+                                    <input type="checkbox" value="Manguera / drenaje de condensado">Manguera / drenaje
+                                    de condensado
+                                </label>
+                            </div>
+                        </div>
+                        <div class="aa-form-hint">Puedes escribir directamente o usar el ícono para marcar varias
+                            refacciones a la vez.</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 aa-field-group">
+                            <label for="cargaGasGramos" class="aa-label">Carga de Gas (Gramos)</label>
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-droplet-half"></i></span>
+                                <input type="number" id="cargaGasGramos" th:field="*{cargaGasGramos}" class="aa-input"
+                                    min="0" step="50">
+                            </div>
+                        </div>
+                        <div class="col-md-6 aa-field-group">
+                            <label for="costoTotal" class="aa-label">Costo Total (MXN)</label>
+                            <div class="aa-input-wrap">
+                                <span class="aa-input-icon"><i class="bi bi-currency-dollar"></i></span>
+                                <input type="number" id="costoTotal" th:field="*{costoTotal}" class="aa-input" min="0"
+                                    step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="aa-field-group">
+                        <label for="estadoFinalEquipo" class="aa-label">Estado Final del Equipo</label>
+                        <div class="aa-input-wrap">
+                            <span class="aa-input-icon"><i class="bi bi-clipboard-check"></i></span>
+                            <select id="estadoFinalEquipo" th:field="*{estadoFinalEquipo}" class="aa-input" required>
+                                <option value="">-- Selecciona el estado --</option>
+                                <option value="OPERATIVO">Operativo</option>
+                                <option value="EN_MANTENIMIENTO">Sigue en Mantenimiento</option>
+                                <option value="FUERA_DE_SERVICIO">Fuera de Servicio</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="aa-form-actions">
+                        <a href="/mantenimientos" class="aa-btn aa-btn--outline-dark aa-btn--auto">Cancelar</a>
+                        <button type="submit" class="aa-btn aa-btn--dark aa-btn--auto">
+                            <i class="bi bi-save"></i> Guardar en Bitácora
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Filtrado de equipos según el edificio seleccionado
+            const edificioFiltro = document.getElementById('edificioFiltro');
+            const equipoSelect = document.getElementById('equipoSelect');
+            const opcionesEquipo = Array.from(equipoSelect.options);
+            const seleccionInicial = opcionesEquipo.find(opt => opt.selected && opt.value !== '');
+            if (seleccionInicial) {
+                edificioFiltro.value = seleccionInicial.getAttribute('data-edificio');
+            }
+
+            edificioFiltro.addEventListener('change', function () {
+                const edificioId = edificioFiltro.value;
+                opcionesEquipo.forEach(opt => {
+                    if (opt.value === '') { opt.hidden = false; return; }
+                    const perteneceAEdificio = opt.getAttribute('data-edificio') === edificioId;
+                    opt.hidden = edificioId !== '' && !perteneceAEdificio;
+                });
+                const actual = opcionesEquipo.find(opt => opt.value === equipoSelect.value);
+                if (edificioId !== '' && actual && actual.hidden) {
+                    equipoSelect.value = '';
+                }
+            });
+
+            // Combo de refacciones: texto libre + panel de checkboxes
+            const refaccionesInput = document.getElementById('refaccionesUtilizadas');
+            const refaccionesToggle = document.getElementById('refaccionesToggle');
+            const refaccionesPanel = document.getElementById('refaccionesPanel');
+            const checkboxes = Array.from(refaccionesPanel.querySelectorAll('input[type="checkbox"]'));
+            const valoresPredefinidos = checkboxes.map(cb => cb.value);
+
+            function itemsActuales() {
+                return refaccionesInput.value.split(',').map(s => s.trim()).filter(Boolean);
+            }
+
+            function sincronizarCheckboxesDesdeInput() {
+                const items = itemsActuales();
+                checkboxes.forEach(cb => { cb.checked = items.includes(cb.value); });
+            }
+
+            function sincronizarInputDesdeCheckboxes() {
+                const manual = itemsActuales().filter(item => !valoresPredefinidos.includes(item));
+                const marcados = checkboxes.filter(cb => cb.checked).map(cb => cb.value);
+                refaccionesInput.value = [...manual, ...marcados].join(', ');
+            }
+
+            refaccionesToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                sincronizarCheckboxesDesdeInput();
+                refaccionesPanel.classList.toggle('is-open');
+            });
+
+            checkboxes.forEach(cb => cb.addEventListener('change', sincronizarInputDesdeCheckboxes));
+
+            document.addEventListener('click', function (e) {
+                if (!refaccionesPanel.contains(e.target) && e.target !== refaccionesToggle) {
+                    refaccionesPanel.classList.remove('is-open');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

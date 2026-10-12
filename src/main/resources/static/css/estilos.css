@@ -1,0 +1,961 @@
+/* ==========================================================================
+   TEC AIRES — Sistema de diseño compartido
+   ==========================================================================
+   Cómo usarlo en una página nueva:
+   1. Enlaza esta hoja DESPUÉS de bootstrap:
+      <link rel="stylesheet" th:href="@{/css/estilos.css}">
+   2. Usa las clases "aa-*" para construir la página (ver ejemplos abajo
+      y en login.html). No sobreescribas los colores de Bootstrap
+      (btn-primary, alert-danger, etc.) directamente: usa las clases aa-*,
+      así todo queda centralizado aquí.
+   3. Si necesitas un color nuevo, agrégalo como variable en :root para
+      que quede disponible en todas las páginas.
+   ========================================================================== */
+
+:root {
+  /* Paleta principal */
+  --aa-bg: #D5D8DD;
+  /* fondo general de la página (gris azulado) */
+  --aa-box: #65A7F2;
+  /* cajas / tarjetas que contienen información */
+  --aa-box-hover: #4A8FDE;
+  /* estado hover/activo sobre elementos azules */
+  --aa-field: #F4F8FD;
+  /* fondo de inputs, casi blanco con tinte azul */
+  --aa-black: #1B396A;
+  /* contornos y texto principal (azul marino) */
+  --aa-white: #FFFFFF;
+
+  /* Estados / feedback */
+  --aa-danger: #C4463A;
+  --aa-danger-bg: #F6D8D4;
+  --aa-info: #2E6E8E;
+  --aa-info-bg: #D6E9F0;
+  --aa-success: #2F7A4D;
+  --aa-success-bg: #DCEFD6;
+
+  /* Estructura */
+  --aa-border: 3px solid var(--aa-black);
+  --aa-border-thin: 2px solid var(--aa-black);
+  --aa-radius: 16px;
+  --aa-radius-sm: 10px;
+  --aa-shadow: 6px 6px 0 var(--aa-black);
+  --aa-shadow-sm: 4px 4px 0 var(--aa-black);
+
+  /* Tipografía */
+  --aa-font: 'Space Grotesk', 'Segoe UI', sans-serif;
+}
+
+/* ---------- Base ---------- */
+.aa-body {
+  background-color: var(--aa-bg);
+  font-family: var(--aa-font);
+  color: var(--aa-black);
+  min-height: 100vh;
+}
+
+.aa-body,
+.aa-body * {
+  box-sizing: border-box;
+}
+
+/* ---------- Layout genérico de página centrada (login, error, etc.) ---------- */
+.aa-center-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ---------- Tarjeta / caja de contenido ---------- */
+.aa-card {
+  background-color: var(--aa-box);
+  border: var(--aa-border);
+  border-radius: var(--aa-radius);
+  box-shadow: var(--aa-shadow);
+  padding: 2.25rem;
+  width: 100%;
+}
+
+.aa-card--sm {
+  max-width: 420px;
+}
+
+.aa-card--md {
+  max-width: 640px;
+}
+
+.aa-card--lg {
+  max-width: 960px;
+}
+
+/* Insignia circular para un icono destacado (ej. logo/ícono del sistema) */
+.aa-badge {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--aa-white);
+  border: var(--aa-border);
+  border-radius: 50%;
+  font-size: 1.6rem;
+  color: var(--aa-black);
+}
+
+.aa-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.15rem;
+}
+
+.aa-subtitle {
+  font-size: 0.85rem;
+  color: #2c2c2c;
+  opacity: 0.85;
+}
+
+/* ---------- Formularios ---------- */
+.aa-field-group {
+  margin-bottom: 1.15rem;
+}
+
+.aa-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.aa-input-wrap {
+  display: flex;
+  align-items: stretch;
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  background-color: var(--aa-field);
+  overflow: hidden;
+}
+
+.aa-input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  border-right: var(--aa-border-thin);
+  background-color: var(--aa-white);
+  color: var(--aa-black);
+  flex-shrink: 0;
+}
+
+.aa-input {
+  border: none;
+  background: transparent;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--aa-font);
+  font-size: 0.95rem;
+  width: 100%;
+  color: var(--aa-black);
+}
+
+.aa-input:focus {
+  outline: none;
+}
+
+.aa-input-wrap:focus-within {
+  box-shadow: 0 0 0 3px rgba(23, 23, 23, 0.15);
+}
+
+.aa-input::placeholder {
+  color: #6b6b6b;
+}
+
+/* ---------- Botones ---------- */
+.aa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-family: var(--aa-font);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--aa-black);
+  background-color: var(--aa-white);
+  border: var(--aa-border);
+  border-radius: var(--aa-radius-sm);
+  box-shadow: var(--aa-shadow-sm);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  text-decoration: none;
+}
+
+.aa-btn:hover {
+  color: var(--aa-black);
+}
+
+.aa-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--aa-black);
+}
+
+.aa-btn--dark {
+  background-color: var(--aa-black);
+  color: var(--aa-white);
+}
+
+/* ---------- Alertas ---------- */
+.aa-alert {
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 1.1rem;
+}
+
+.aa-alert--danger {
+  background-color: var(--aa-danger-bg);
+  color: var(--aa-danger);
+  border-color: var(--aa-danger);
+}
+
+.aa-alert--info {
+  background-color: var(--aa-info-bg);
+  color: var(--aa-info);
+  border-color: var(--aa-info);
+}
+
+.aa-alert--success {
+  background-color: var(--aa-success-bg);
+  color: var(--aa-success);
+  border-color: var(--aa-success);
+}
+
+/* ---------- Pie de tarjeta / notas pequeñas ---------- */
+.aa-footnote {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #2c2c2c;
+  opacity: 0.75;
+  margin-top: 1.25rem;
+}
+
+/* ---------- Botón: variantes ---------- */
+.aa-btn--auto {
+  width: auto;
+}
+
+.aa-btn--danger {
+  background-color: var(--aa-danger);
+  color: var(--aa-white);
+}
+
+.aa-btn--ghost {
+  background-color: transparent;
+  color: var(--aa-white);
+  border-color: var(--aa-white);
+  box-shadow: none;
+}
+
+.aa-btn--ghost:hover {
+  color: var(--aa-white);
+}
+
+.aa-btn--outline-dark {
+  background-color: transparent;
+  color: var(--aa-black);
+  box-shadow: none;
+}
+
+.aa-btn--outline-dark:hover {
+  color: var(--aa-black);
+}
+
+.aa-btn--sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  box-shadow: 3px 3px 0 var(--aa-black);
+}
+
+/* ---------- Navbar ---------- */
+.aa-navbar {
+  background-color: var(--aa-black);
+  border-bottom: var(--aa-border);
+  padding: 0.65rem 1.5rem;
+}
+
+.aa-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--aa-white) !important;
+  font-family: var(--aa-font);
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+
+.aa-navbar-brand i {
+  color: var(--aa-box);
+}
+
+.aa-nav-link {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-family: var(--aa-font);
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: var(--aa-radius-sm);
+  padding: 0.45rem 0.7rem !important;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.aa-nav-link:hover,
+.aa-nav-link.active {
+  background-color: var(--aa-box);
+  color: var(--aa-black) !important;
+}
+
+.aa-navbar-user {
+  color: var(--aa-white);
+  font-size: 0.85rem;
+}
+
+/* ---------- Página interior (dashboard, listas, etc.) ---------- */
+.aa-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.75rem;
+}
+
+.aa-page-title {
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 0.15rem;
+}
+
+.aa-page-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.aa-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Aviso destacado (reemplaza los KPI de 4 tarjetas) ---------- */
+.aa-avisos {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background-color: var(--aa-box);
+  border: var(--aa-border);
+  border-radius: var(--aa-radius);
+  box-shadow: var(--aa-shadow);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.aa-avisos-icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--aa-white);
+  border: var(--aa-border-thin);
+  border-radius: 50%;
+  font-size: 1.4rem;
+}
+
+.aa-avisos-count {
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.aa-avisos-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* ---------- Tarjeta contenedora de tabla ---------- */
+.aa-panel {
+  background-color: var(--aa-white);
+  border: var(--aa-border);
+  border-radius: var(--aa-radius);
+  box-shadow: var(--aa-shadow);
+  overflow: hidden;
+}
+
+.aa-panel-header {
+  background-color: var(--aa-black);
+  color: var(--aa-white);
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  border-bottom: var(--aa-border);
+}
+
+.aa-panel-header h6 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ---------- Tabla ---------- */
+.aa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.aa-table thead th {
+  background-color: var(--aa-box);
+  color: var(--aa-black);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: var(--aa-border-thin);
+  white-space: nowrap;
+}
+
+.aa-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #d8d8d8;
+  vertical-align: middle;
+}
+
+.aa-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.aa-table tbody tr:hover {
+  background-color: var(--aa-field);
+}
+
+.aa-table .aa-folio {
+  font-weight: 700;
+}
+
+.aa-table-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  opacity: 0.65;
+  font-size: 0.85rem;
+}
+
+/* Etiquetas (prioridad / estado) */
+.aa-tag {
+  display: inline-block;
+  border: var(--aa-border-thin);
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: var(--aa-white);
+}
+
+.aa-tag--urgente {
+  background-color: var(--aa-danger-bg);
+  color: var(--aa-danger);
+  border-color: var(--aa-danger);
+}
+
+.aa-tag--alta {
+  background-color: #FBEACB;
+  color: #92650B;
+  border-color: #92650B;
+}
+
+.aa-tag--media {
+  background-color: var(--aa-info-bg);
+  color: var(--aa-info);
+  border-color: var(--aa-info);
+}
+
+.aa-tag--baja {
+  background-color: #E7E7E7;
+  color: #4a4a4a;
+  border-color: #4a4a4a;
+}
+
+.aa-tag--pendiente {
+  background-color: #FBEACB;
+  color: #92650B;
+  border-color: #92650B;
+}
+
+.aa-tag--proceso {
+  background-color: var(--aa-info-bg);
+  color: var(--aa-info);
+  border-color: var(--aa-info);
+}
+
+.aa-tag--atendido {
+  background-color: var(--aa-success-bg);
+  color: var(--aa-success);
+  border-color: var(--aa-success);
+}
+
+.aa-tag--neutral {
+  background-color: var(--aa-field);
+  color: var(--aa-black);
+  border-color: var(--aa-black);
+}
+
+/* ---------- Botones de icono (acciones dentro de una fila de tabla) ---------- */
+.aa-icon-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.aa-icon-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  background-color: var(--aa-white);
+  color: var(--aa-black);
+  box-shadow: 3px 3px 0 var(--aa-black);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.aa-icon-btn:hover {
+  color: inherit;
+}
+
+.aa-icon-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--aa-black);
+}
+
+.aa-icon-btn--info {
+  background-color: var(--aa-info-bg);
+  color: var(--aa-info);
+}
+
+.aa-icon-btn--success {
+  background-color: var(--aa-success-bg);
+  color: var(--aa-success);
+}
+
+.aa-icon-btn--neutral {
+  background-color: var(--aa-field);
+  color: var(--aa-black);
+}
+
+.aa-icon-btn--danger {
+  background-color: var(--aa-danger-bg);
+  color: var(--aa-danger);
+}
+
+/* ---------- Tabla adaptada a móvil (la cabecera se oculta y cada fila se
+   convierte en una tarjeta con etiquetas por campo) ---------- */
+@media (max-width: 767px) {
+  .aa-table thead {
+    display: none;
+  }
+
+  .aa-table,
+  .aa-table tbody,
+  .aa-table tr,
+  .aa-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .aa-table tbody tr {
+    border-bottom: var(--aa-border);
+    padding: 0.75rem 1rem;
+  }
+
+  .aa-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .aa-table tbody td {
+    border-bottom: none;
+    padding: 0.35rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: right;
+  }
+
+  .aa-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-align: left;
+    opacity: 0.7;
+  }
+
+  .aa-table tbody td.aa-td-accion {
+    justify-content: flex-end;
+  }
+
+  .aa-table tbody td.aa-td-accion::before {
+    content: none;
+  }
+}
+
+/* ---------- Etiqueta neutra (conteos, estados sin variante de color) ---------- */
+.aa-tag--neutral {
+  background-color: var(--aa-field);
+  color: var(--aa-black);
+  border-color: var(--aa-black);
+}
+
+/* ---------- Alertas: variante éxito + versión con botón de cierre ---------- */
+.aa-alert--success {
+  background-color: #DCEFD6;
+  color: #3C7A31;
+  border-color: #3C7A31;
+}
+
+.aa-alert--dismissible {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.aa-alert-close {
+  background: transparent;
+  border: none;
+  font-size: 1.15rem;
+  line-height: 1;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 0.15rem;
+  flex-shrink: 0;
+}
+
+/* ---------- Botones de acción para filas de tabla (icono + texto opcional) ---------- */
+.aa-row-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.aa-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 34px;
+  padding: 0 0.65rem;
+  font-family: var(--aa-font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  background-color: var(--aa-white);
+  color: var(--aa-black);
+  box-shadow: 3px 3px 0 var(--aa-black);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.aa-action-btn:hover {
+  color: inherit;
+}
+
+.aa-action-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--aa-black);
+}
+
+.aa-action-btn--icon {
+  width: 34px;
+  padding: 0;
+}
+
+.aa-action-btn--info {
+  background-color: var(--aa-info-bg);
+  color: var(--aa-info);
+  border-color: var(--aa-info);
+}
+
+.aa-action-btn--success {
+  background-color: #DCEFD6;
+  color: #3C7A31;
+  border-color: #3C7A31;
+}
+
+.aa-action-btn--danger {
+  background-color: var(--aa-danger-bg);
+  color: var(--aa-danger);
+  border-color: var(--aa-danger);
+}
+
+.aa-action-btn--muted {
+  background-color: #ECECEC;
+  color: #4a4a4a;
+  border-color: #4a4a4a;
+}
+
+/* ---------- Formularios dentro de un aa-panel (fichas de alta/edición) ---------- */
+.aa-panel-body {
+  padding: 1.75rem;
+}
+
+.aa-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+/* ---------- Botón adosado dentro de un input (mostrar/ocultar contraseña) ---------- */
+.aa-input-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  border: none;
+  border-left: var(--aa-border-thin);
+  background-color: var(--aa-white);
+  color: var(--aa-black);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.aa-input-toggle:hover {
+  background-color: var(--aa-field);
+}
+
+/* ---------- Estados de validación sobre el contenedor del input ---------- */
+.aa-input-wrap--invalid {
+  border-color: var(--aa-danger);
+}
+
+.aa-input-wrap--valid {
+  border-color: #3C7A31;
+}
+
+/* ---------- Texto de ayuda / error bajo un campo ---------- */
+.aa-form-hint {
+  font-size: 0.78rem;
+  opacity: 0.7;
+  margin-top: 0.35rem;
+}
+
+.aa-field-error {
+  font-size: 0.8rem;
+  color: var(--aa-danger);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Línea de contacto (icono + texto) dentro de una celda de tabla ---------- */
+.aa-contact-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+.aa-contact-line:not(:last-child) {
+  margin-bottom: 0.15rem;
+}
+/* ---------- Campo de solo lectura (autollenado, no editable) ---------- */
+.aa-input:read-only {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+/* ---------- Ítem individual dentro de una barra de filtro (label + select) ---------- */
+.aa-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+/* ---------- Línea secundaria dentro de una celda (fecha, ubicación, contacto) ---------- */
+.aa-subtext {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.65;
+  margin-top: 0.15rem;
+}
+/* ---------- Enlace de regreso ---------- */
+.aa-back-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--aa-black);
+  text-decoration: none;
+  opacity: 0.7;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.aa-back-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+  color: var(--aa-black);
+}
+
+/* ---------- Etiqueta grande (folio del ticket) ---------- */
+.aa-tag--lg {
+  font-size: 0.9rem;
+  padding: 0.35rem 0.9rem;
+}
+
+/* ---------- Variantes de encabezado de panel ---------- */
+.aa-panel-header--accent {
+  background-color: var(--aa-box);
+  color: var(--aa-black);
+}
+
+.aa-panel-header--light {
+  background-color: var(--aa-field);
+  color: var(--aa-black);
+  border-bottom: var(--aa-border-thin);
+}
+
+/* ---------- Par etiqueta/valor para mostrar datos (no editables) ---------- */
+.aa-info-item {
+  margin-bottom: 0.9rem;
+}
+
+.aa-info-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.6;
+  margin-bottom: 0.15rem;
+}
+
+.aa-info-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ---------- Separador simple ---------- */
+.aa-divider {
+  border: none;
+  border-top: var(--aa-border-thin);
+  margin: 0.75rem 0;
+}
+
+/* ---------- Caja de texto largo (descripción) ---------- */
+.aa-desc-box {
+  background-color: var(--aa-field);
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  padding: 1rem;
+  white-space: pre-line;
+}
+
+/* ---------- Botón: variante éxito ---------- */
+.aa-btn--success {
+  background-color: #3C7A31;
+  color: var(--aa-white);
+}
+/* ---------- Combo: input de texto + panel de checkboxes desplegable ---------- */
+.aa-combo {
+  position: relative;
+}
+
+.aa-combo-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background-color: var(--aa-white);
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  box-shadow: var(--aa-shadow-sm);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 20;
+  display: none;
+}
+
+.aa-combo-panel.is-open {
+  display: block;
+}
+
+.aa-combo-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.aa-combo-option:hover {
+  background-color: var(--aa-field);
+}
+
+.aa-combo-option input[type="checkbox"] {
+  accent-color: var(--aa-black);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+/* ---------- Etiqueta oscura (estado "Baja") ---------- */
+.aa-tag--dark {
+  background-color: var(--aa-black);
+  color: var(--aa-white);
+  border-color: var(--aa-black);
+}
+
+/* ---------- Enlace pequeño dentro de una celda (ticket asociado) ---------- */
+.aa-link-chip {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--aa-info);
+  text-decoration: none;
+}
+
+.aa-link-chip:hover {
+  text-decoration: underline;
+  color: var(--aa-info);
+}
+/* ---------- Caja para el código QR (fondo blanco puro, para buen escaneo) ---------- */
+.aa-qr-box {
+  display: inline-block;
+  background-color: var(--aa-white);
+  border: var(--aa-border-thin);
+  border-radius: var(--aa-radius-sm);
+  padding: 0.5rem;
+}
