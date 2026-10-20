@@ -5,6 +5,7 @@ import com.tecnologico.aires.models.enums.EstadoReporte;
 import com.tecnologico.aires.models.enums.Prioridad;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import java.util.Collection;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,8 @@ public interface ReporteRepository extends JpaRepository<Reporte, Long> {
 
     // Consultas por estado del ticket
     List<Reporte> findByEstadoReporteOrderByFechaReporteDesc(EstadoReporte estadoReporte);
+
+    List<Reporte> findByEquipoIdAndEstadoReporteIn(Long equipoId, Collection<EstadoReporte> estados);
 
     // Consultas por prioridad
     List<Reporte> findByPrioridadOrderByFechaReporteDesc(Prioridad prioridad);

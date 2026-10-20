@@ -2,7 +2,6 @@ package com.tecnologico.aires.controllers;
 
 import com.tecnologico.aires.services.EdificioService;
 import com.tecnologico.aires.services.EquipoService;
-import com.tecnologico.aires.services.MantenimientoService;
 import com.tecnologico.aires.services.ReporteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,9 +18,6 @@ public class DashboardController {
     private ReporteService reporteService;
 
     @Autowired
-    private MantenimientoService mantenimientoService;
-
-    @Autowired
     private EdificioService edificioService;
 
     @GetMapping({"/", "/dashboard"})
@@ -29,9 +25,14 @@ public class DashboardController {
         // Métricas ejecutivas para el panel principal
         model.addAttribute("totalEdificios", edificioService.listarTodos().size());
         model.addAttribute("totalEquipos", equipoService.listarTodos().size());
-        model.addAttribute("totalReportes", reporteService.listarTodos().size());
-        model.addAttribute("gastoTotalMantenimiento", mantenimientoService.calcularGastoTotal());
-        model.addAttribute("listadoReportes", reporteService.listarTodos());
+        var activos = reporteService.buscar("ACTIVOS", null).stream()
+        .sorted(java.util.Comparator.comparing(
+                        com.tecnologico.aires.models.Reporte::getPrioridad,
+                        java.util.Comparator.reverseOrder())
+                .thenComparing(com.tecnologico.aires.models.Reporte::getFechaReporte))
+        .toList();
+        model.addAttribute("totalReportes", activos.size());
+        model.addAttribute("listadoReportes", activos);
 
         return "dashboard";
     }

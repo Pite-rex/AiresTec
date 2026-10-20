@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
 
@@ -26,6 +27,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/favicon.ico", "/login").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/reportes/levantar/**", "/reportes/confirmacion/**")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/reportes/publico/guardar").permitAll()
+
                         // Admins
                         .requestMatchers("/usuarios/**", "/edificios/**", "/espacios/**")
                         .hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR")
@@ -36,7 +41,7 @@ public class SecurityConfig {
                                 "ROLE_PERSONAL_SERVICIO_SOCIAL")
 
                         // Todos los roles
-                        .requestMatchers("/reportes/**", "/bitacoras/**", "/historial/**")
+                        .requestMatchers("/reportes/**", "/historial/**")
                         .hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR", "TECNICO", "ROLE_TECNICO",
                                 "PERSONAL_SERVICIO_SOCIAL", "ROLE_PERSONAL_SERVICIO_SOCIAL")
 

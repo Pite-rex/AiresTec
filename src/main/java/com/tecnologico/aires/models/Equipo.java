@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @Table(name = "equipos")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+
 public class Equipo {
 
     @Id

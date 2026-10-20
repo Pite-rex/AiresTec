@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.List;
 
 @Controller
@@ -30,10 +32,13 @@ public class EquipoController {
     @Autowired
     private EdificioService edificioService;
 
+    @Value("${app.base-url:}")
+    private String baseUrlConfigurada;
+
     @GetMapping
     public String listarEquipos(@RequestParam(value = "edificioId", required = false) Long edificioId,
-                                @RequestParam(value = "estado", required = false) EstadoOperativo estado,
-                                Model model) {
+            @RequestParam(value = "estado", required = false) EstadoOperativo estado,
+            Model model) {
         List<Equipo> equipos;
 
         if (edificioId != null) {
@@ -56,18 +61,18 @@ public class EquipoController {
     public String mostrarFormularioNuevo(Model model) {
         Equipo equipo = new Equipo();
         equipo.setEstadoOperativo(EstadoOperativo.OPERATIVO);
-        
+
         model.addAttribute("equipo", equipo);
         model.addAttribute("espacios", espacioService.listarTodos());
         model.addAttribute("estados", EstadoOperativo.values());
-        model.addAttribute("edificios", edificioService.listarTodos());   
+        model.addAttribute("edificios", edificioService.listarTodos());
         model.addAttribute("esEdicion", false);
         return "equipos/formulario";
     }
 
     @PostMapping("/guardar")
     public String guardarEquipo(@ModelAttribute("equipo") Equipo equipo,
-                                RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
 
         // Validaciones para nuevo equipo (PROC-03 / RF11)
         if (equipo.getId() == null) {
@@ -76,7 +81,8 @@ public class EquipoController {
                 return "redirect:/equipos/nuevo";
             }
             if (equipoService.existeNumeroSerie(equipo.getNumeroSerie())) {
-                redirectAttributes.addFlashAttribute("error", "El número de serie ingresado ya se encuentra registrado.");
+                redirectAttributes.addFlashAttribute("error",
+                        "El número de serie ingresado ya se encuentra registrado.");
                 return "redirect:/equipos/nuevo";
             }
         }
@@ -106,7 +112,7 @@ public class EquipoController {
                     model.addAttribute("equipo", equipo);
                     model.addAttribute("espacios", espacioService.listarTodos());
                     model.addAttribute("estados", EstadoOperativo.values());
-                    model.addAttribute("edificios", edificioService.listarTodos()); 
+                    model.addAttribute("edificios", edificioService.listarTodos());
                     model.addAttribute("esEdicion", true);
                     return "equipos/formulario";
                 })
@@ -122,7 +128,8 @@ public class EquipoController {
             equipoService.eliminar(id);
             redirectAttributes.addFlashAttribute("exito", "Equipo eliminado correctamente del inventario.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "No se puede eliminar el equipo porque cuenta con reportes o bitácoras en su historial.");
+            redirectAttributes.addFlashAttribute("error",
+                    "No se puede eliminar el equipo porque cuenta con reportes o bitácoras en su historial.");
         }
         return "redirect:/equipos";
     }
@@ -134,8 +141,10 @@ public class EquipoController {
         return equipoService.buscarPorId(id)
                 .map(equipo -> {
                     try {
-                        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-                        String qrContent = baseUrl + "/equipos/detalle/" + equipo.getId();
+                        String baseUrl = !baseUrlConfigurada.isBlank()
+                                ? baseUrlConfigurada.replaceAll("/+$", "")
+                                : request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+                        String qrContent = baseUrl + "/reportes/levantar/" + equipo.getId();
                         byte[] qrImage = QRCodeGenerator.generateQRCodeImage(qrContent, 250, 250);
                         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrImage);
                     } catch (Exception e) {

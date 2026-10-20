@@ -54,9 +54,9 @@
         <!-- Formulario de captura rápida -->
         <div class="aa-panel">
             <div class="aa-panel-body">
-                <form th:action="@{/reportes/guardar}" th:object="${reporte}" method="post">
+                <form th:action="@{/reportes/publico/guardar}" th:object="${reporte}" method="post">
                     <input type="hidden" name="equipo.id" th:value="${equipoFijo.id}">
-                    <input type="hidden" name="esPublico" value="true">
+
 
                     <div class="aa-section-title">Tus Datos de Contacto</div>
 

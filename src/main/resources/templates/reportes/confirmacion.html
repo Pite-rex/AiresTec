@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
 </head>
+
 <body class="aa-body py-5">
 
     <main class="container" style="max-width: 600px;">
@@ -20,8 +23,11 @@
                 <i class="bi bi-check-lg" style="color: #3C7A31; font-size: 1.9rem;"></i>
             </div>
 
-            <div class="aa-title" style="font-size: 1.3rem;">¡Reporte Registrado con Éxito!</div>
-            <p class="aa-subtitle mb-4">El departamento de mantenimiento y servicios generales ha recibido tu solicitud de atención técnica.</p>
+            <div class="aa-title" style="font-size: 1.3rem;"
+                th:text="${param.actualizado != null} ? '¡Reporte Actualizado!' : '¡Reporte Registrado con Éxito!'">
+            </div>
+            <p class="aa-subtitle mb-4">El departamento de mantenimiento y servicios generales ha recibido tu solicitud
+                de atención técnica.</p>
 
             <!-- Resumen del Folio -->
             <div class="aa-desc-box text-start mb-4">
@@ -37,22 +43,20 @@
                     </div>
                     <div class="col-6 aa-info-item">
                         <span class="aa-info-label">Fecha y Hora</span>
-                        <span class="aa-info-value" th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></span>
+                        <span class="aa-info-value"
+                            th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></span>
                     </div>
                     <div class="col-12 aa-info-item">
                         <span class="aa-info-label">Ubicación Física</span>
-                        <span class="aa-info-value" th:text="${reporte.equipo.espacio.edificio.nombreEdificio + ' - ' + reporte.equipo.espacio.nombreEspacio}"></span>
+                        <span class="aa-info-value"
+                            th:text="${reporte.equipo.espacio.edificio.nombreEdificio + ' - ' + reporte.equipo.espacio.nombreEspacio}"></span>
                     </div>
-                    <div class="col-12 aa-info-item mb-0">
-                        <span class="aa-info-label">Solicitante</span>
-                        <span class="aa-info-value" th:text="${reporte.nombreSolicitante}"></span>
-                    </div>
+
                 </div>
             </div>
 
-            <a th:href="@{/reportes/levantar/{equipoId}(equipoId=${reporte.equipo.id})}" class="aa-btn aa-btn--outline-dark">
-                <i class="bi bi-arrow-repeat"></i> Levantar otro reporte para este equipo
-            </a>
+            <p class="aa-subtitle mb-0">Si el problema continúa, podrás volver a reportar este equipo pasadas 2 horas.
+            </p>
         </div>
 
         <div class="aa-footnote">Instituto Tecnológico &bull; Control de Aire Acondicionado (Tec Aires)</div>
@@ -61,4 +65,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

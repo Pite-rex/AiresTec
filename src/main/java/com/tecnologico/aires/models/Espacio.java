@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 @Table(name = "espacios")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Espacio {
 
     @Id

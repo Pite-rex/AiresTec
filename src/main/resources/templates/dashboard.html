@@ -46,14 +46,14 @@
             </div>
             <div>
                 <div class="aa-avisos-count" th:text="${totalReportes}">0</div>
-                <div class="aa-avisos-label">Reportes totales registrados en el sistema</div>
+                <div class="aa-avisos-label">Reportes activos (pendientes y en proceso)</div>
             </div>
         </div>
 
         <!-- Tabla de Resumen de Reportes -->
         <div class="aa-panel">
             <div class="aa-panel-header">
-                <h6><i class="bi bi-list-task me-2"></i> Reportes Generales (Mesa de Ayuda)</h6>
+                <h6><i class="bi bi-list-task me-2"></i>Reportes por atender</h6>
                 <a href="/reportes" class="aa-btn aa-btn--ghost aa-btn--sm aa-btn--auto">Ver todos los tickets</a>
             </div>
             <div class="table-responsive">
@@ -98,7 +98,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(listadoReportes)}">
-                            <td colspan="6" class="aa-table-empty">No hay reportes registrados.</td>
+                            <td colspan="6" class="aa-table-empty">No hay reportes pendientes. ¡Todo al día!</td>
                         </tr>
                     </tbody>
                 </table>

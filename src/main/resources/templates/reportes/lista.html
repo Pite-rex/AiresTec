@@ -49,13 +49,22 @@
         <!-- Filtros por Estado y Prioridad -->
         <form th:action="@{/reportes}" method="get" class="aa-filter-bar">
             <div class="aa-filter-item">
-                <label for="filtroEstado" class="aa-filter-label">Estado</label>
+                <label for="filtroEstado" class="aa-filter-label">Mostrar</label>
                 <div class="aa-input-wrap">
                     <select name="estado" id="filtroEstado" class="aa-input" onchange="this.form.submit()">
-                        <option value="">-- Todos los Estados --</option>
-                        <option th:each="est : ${estados}" th:value="${est}" th:text="${est}"
-                            th:selected="${est == estadoSeleccionado}">
+                        <option value="ACTIVOS" th:selected="${estadoSeleccionado == 'ACTIVOS'}">Activos (pendientes y
+                            en proceso)</option>
+                        <option value="PENDIENTE" th:selected="${estadoSeleccionado == 'PENDIENTE'}">Solo pendientes
                         </option>
+                        <option value="EN_PROCESO" th:selected="${estadoSeleccionado == 'EN_PROCESO'}">Solo en proceso
+                        </option>
+                        <option value="ATENDIDO" th:selected="${estadoSeleccionado == 'ATENDIDO'}">Solo atendidos
+                        </option>
+                        <option value="CANCELADO" th:selected="${estadoSeleccionado == 'CANCELADO'}">Solo cancelados
+                        </option>
+                        <option value="CERRADOS" th:selected="${estadoSeleccionado == 'CERRADOS'}">Cerrados (atendidos y
+                            cancelados)</option>
+                        <option value="TODOS" th:selected="${estadoSeleccionado == 'TODOS'}">Todos</option>
                     </select>
                 </div>
             </div>
@@ -72,7 +81,7 @@
                 </div>
             </div>
 
-            <a th:if="${estadoSeleccionado != null or prioridadSeleccionada != null}" href="/reportes"
+            <a th:if="${estadoSeleccionado != 'ACTIVOS' or prioridadSeleccionada != null}" href="/reportes"
                 class="aa-btn aa-btn--outline-dark aa-btn--auto aa-btn--sm">Limpiar Filtros</a>
         </form>
 

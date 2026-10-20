@@ -16,7 +16,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import com.tecnologico.aires.models.enums.Prioridad;
+
+import java.util.List;
+import com.tecnologico.aires.models.enums.Prioridad;
 
 @ExtendWith(MockitoExtension.class)
 class ReporteServiceTest {
@@ -53,6 +62,26 @@ class ReporteServiceTest {
         assertEquals(EstadoOperativo.EN_MANTENIMIENTO, equipo.getEstadoOperativo());
         verify(equipoRepository).save(equipo);
         verify(reporteRepository).save(reporte);
+    }
+
+    @Test
+    void registrarReportePublicoRechazaSiHayReporteAbiertoDentroDeLasDosHoras() {
+        Equipo equipo = new Equipo();
+        equipo.setId(9L);
+        equipo.setEstadoOperativo(EstadoOperativo.EN_MANTENIMIENTO);
+        Reporte abierto = new Reporte();
+        abierto.setEquipo(equipo);
+        abierto.setFechaReporte(LocalDateTime.now().minusMinutes(30));
+        when(equipoRepository.findById(9L)).thenReturn(Optional.of(equipo));
+        when(reporteRepository.findByEquipoIdAndEstadoReporteIn(eq(9L), any()))
+                .thenReturn(List.of(abierto));
+
+        ReporteEnEsperaException ex = assertThrows(ReporteEnEsperaException.class,
+                () -> reporteService.registrarReportePublico(9L, "Ana", null, null,
+                        Prioridad.MEDIA, "No enfría"));
+
+        assertTrue(ex.getEspera().toMinutes() <= 90);
+        verify(reporteRepository, never()).save(any());
     }
 
     @Test
@@ -99,5 +128,24 @@ class ReporteServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> reporteService.cambiarEstado(404L, EstadoReporte.ATENDIDO));
         verify(reporteRepository, never()).save(any());
+    }
+
+    @Test
+    void cambiarEstadoAtendidoNoReactivaSiHayOtroReporteAbierto() {
+        Equipo equipo = new Equipo();
+        equipo.setId(5L);
+        equipo.setEstadoOperativo(EstadoOperativo.EN_MANTENIMIENTO);
+        Reporte cerrado = new Reporte();
+        cerrado.setEquipo(equipo);
+        Reporte otroAbierto = new Reporte();
+        otroAbierto.setPrioridad(Prioridad.MEDIA);
+        when(reporteRepository.findById(3L)).thenReturn(Optional.of(cerrado));
+        when(reporteRepository.save(cerrado)).thenReturn(cerrado);
+        when(reporteRepository.findByEquipoIdAndEstadoReporteIn(eq(5L), any()))
+                .thenReturn(List.of(otroAbierto));
+
+        reporteService.cambiarEstado(3L, EstadoReporte.ATENDIDO);
+
+        assertEquals(EstadoOperativo.EN_MANTENIMIENTO, equipo.getEstadoOperativo());
     }
 }

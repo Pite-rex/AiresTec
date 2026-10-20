@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/estilos.css}" href="../../static/css/estilos.css">
 </head>
 
@@ -33,11 +34,13 @@
         <!-- Alertas de notificación -->
         <div th:if="${exito}" class="aa-alert aa-alert--success aa-alert--dismissible">
             <span th:text="${exito}"></span>
-            <button type="button" class="aa-alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+            <button type="button" class="aa-alert-close" onclick="this.parentElement.remove()"
+                aria-label="Cerrar">&times;</button>
         </div>
         <div th:if="${error}" class="aa-alert aa-alert--danger aa-alert--dismissible">
             <span th:text="${error}"></span>
-            <button type="button" class="aa-alert-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+            <button type="button" class="aa-alert-close" onclick="this.parentElement.remove()"
+                aria-label="Cerrar">&times;</button>
         </div>
 
         <div class="row g-4">
@@ -46,24 +49,33 @@
                 <div class="aa-panel mb-4">
                     <div class="aa-panel-header">
                         <h6><i class="bi bi-ticket-detailed me-2"></i> Información del Reporte</h6>
-                        <span th:if="${reporte.prioridad.name() == 'BAJA'}" class="aa-tag aa-tag--baja">Prioridad Baja</span>
-                        <span th:if="${reporte.prioridad.name() == 'MEDIA'}" class="aa-tag aa-tag--media">Prioridad Media</span>
-                        <span th:if="${reporte.prioridad.name() == 'ALTA'}" class="aa-tag aa-tag--alta">Prioridad Alta</span>
-                        <span th:if="${reporte.prioridad.name() == 'URGENTE'}" class="aa-tag aa-tag--urgente">Prioridad Urgente</span>
+                        <span th:if="${reporte.prioridad.name() == 'BAJA'}" class="aa-tag aa-tag--baja">Prioridad
+                            Baja</span>
+                        <span th:if="${reporte.prioridad.name() == 'MEDIA'}" class="aa-tag aa-tag--media">Prioridad
+                            Media</span>
+                        <span th:if="${reporte.prioridad.name() == 'ALTA'}" class="aa-tag aa-tag--alta">Prioridad
+                            Alta</span>
+                        <span th:if="${reporte.prioridad.name() == 'URGENTE'}" class="aa-tag aa-tag--urgente">Prioridad
+                            Urgente</span>
                     </div>
 
                     <div class="aa-panel-body">
                         <div class="row g-3 mb-3">
                             <div class="col-sm-6 aa-info-item">
                                 <span class="aa-info-label">Fecha y Hora de Recepción</span>
-                                <span class="aa-info-value" th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></span>
+                                <span class="aa-info-value"
+                                    th:text="${#temporals.format(reporte.fechaReporte, 'dd/MM/yyyy HH:mm')}"></span>
                             </div>
                             <div class="col-sm-6 aa-info-item">
                                 <span class="aa-info-label">Estado del Ticket</span>
-                                <span th:if="${reporte.estadoReporte.name() == 'PENDIENTE'}" class="aa-tag aa-tag--pendiente">Pendiente</span>
-                                <span th:if="${reporte.estadoReporte.name() == 'EN_PROCESO'}" class="aa-tag aa-tag--proceso">En Proceso</span>
-                                <span th:if="${reporte.estadoReporte.name() == 'ATENDIDO'}" class="aa-tag aa-tag--atendido">Atendido</span>
-                                <span th:if="${reporte.estadoReporte.name() == 'CANCELADO'}" class="aa-tag aa-tag--neutral">Cancelado</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'PENDIENTE'}"
+                                    class="aa-tag aa-tag--pendiente">Pendiente</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'EN_PROCESO'}"
+                                    class="aa-tag aa-tag--proceso">En Proceso</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'ATENDIDO'}"
+                                    class="aa-tag aa-tag--atendido">Atendido</span>
+                                <span th:if="${reporte.estadoReporte.name() == 'CANCELADO'}"
+                                    class="aa-tag aa-tag--neutral">Cancelado</span>
                             </div>
                         </div>
 
@@ -77,11 +89,13 @@
                             </div>
                             <div class="col-sm-6 aa-info-item">
                                 <span class="aa-info-label">Correo de Contacto</span>
-                                <span class="aa-info-value" th:text="${reporte.correoSolicitante ?: 'No especificado'}"></span>
+                                <span class="aa-info-value"
+                                    th:text="${reporte.correoSolicitante ?: 'No especificado'}"></span>
                             </div>
                             <div class="col-sm-6 aa-info-item">
                                 <span class="aa-info-label">Teléfono / Extensión</span>
-                                <span class="aa-info-value" th:text="${reporte.telefonoSolicitante ?: 'No especificado'}"></span>
+                                <span class="aa-info-value"
+                                    th:text="${reporte.telefonoSolicitante ?: 'No especificado'}"></span>
                             </div>
                         </div>
 
@@ -104,13 +118,15 @@
                     </div>
                     <div class="aa-panel-body">
                         <div class="aa-info-value mb-1" th:text="${reporte.equipo.codigoEquipo}"></div>
-                        <div class="aa-subtext mb-2" th:text="${reporte.equipo.marca + ' ' + reporte.equipo.modelo}"></div>
+                        <div class="aa-subtext mb-2" th:text="${reporte.equipo.marca + ' ' + reporte.equipo.modelo}">
+                        </div>
 
                         <hr class="aa-divider">
 
                         <div class="aa-info-item">
                             <span class="aa-info-label">Edificio</span>
-                            <span class="aa-info-value" th:text="${reporte.equipo.espacio.edificio.nombreEdificio}"></span>
+                            <span class="aa-info-value"
+                                th:text="${reporte.equipo.espacio.edificio.nombreEdificio}"></span>
                         </div>
                         <div class="aa-info-item">
                             <span class="aa-info-label">Aula / Espacio</span>
@@ -122,12 +138,11 @@
                         </div>
 
                         <div class="d-flex flex-column gap-2 mt-3">
-                            <a th:href="@{/equipos/detalle/{id}(id=${reporte.equipo.id})}" class="aa-btn aa-btn--outline-dark">
+                            <a th:href="@{/equipos/detalle/{id}(id=${reporte.equipo.id})}"
+                                class="aa-btn aa-btn--outline-dark">
                                 <i class="bi bi-file-earmark-text"></i> Ver Ficha Técnica
                             </a>
-                            <a th:href="@{/mantenimientos/nuevo/{id}(id=${reporte.id})}" class="aa-btn aa-btn--success">
-                                <i class="bi bi-clipboard-check"></i> Cerrar con Bitácora Técnica
-                            </a>
+
                         </div>
                     </div>
                 </div>
@@ -135,23 +150,28 @@
                 <!-- Panel de Actualización de Estado -->
                 <div class="aa-panel">
                     <div class="aa-panel-header aa-panel-header--light">
-                        <h6><i class="bi bi-sliders me-1"></i> Cambiar Estado</h6>
+                        <h6><i class="bi bi-sliders me-1"></i> Atender ticket</h6>
                     </div>
                     <div class="aa-panel-body">
-                        <form th:action="@{/reportes/cambiar-estado}" method="post">
+                        <form th:action="@{/reportes/cambiar-estado}" method="post" class="d-flex flex-column gap-2"
+                            th:with="activo=${reporte.estadoReporte.name() == 'PENDIENTE' or reporte.estadoReporte.name() == 'EN_PROCESO'}">
                             <input type="hidden" name="id" th:value="${reporte.id}">
-                            <div class="aa-field-group">
-                                <label for="nuevoEstado" class="aa-label">Nuevo Estado del Ticket</label>
-                                <div class="aa-input-wrap">
-                                    <select name="nuevoEstado" id="nuevoEstado" class="aa-input" required>
-                                        <option th:each="est : ${estados}" th:value="${est}" th:text="${est}"
-                                            th:selected="${est == reporte.estadoReporte}">
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" class="aa-btn aa-btn--dark aa-btn--sm">
-                                <i class="bi bi-arrow-repeat"></i> Actualizar Estado
+
+                            <button th:if="${reporte.estadoReporte.name() == 'PENDIENTE'}" type="submit"
+                                name="nuevoEstado" value="EN_PROCESO" class="aa-btn aa-btn--outline-dark">
+                                <i class="bi bi-play-circle"></i> Iniciar atención
+                            </button>
+                            <button th:if="${activo}" type="submit" name="nuevoEstado" value="ATENDIDO"
+                                class="aa-btn aa-btn--success">
+                                <i class="bi bi-check-circle"></i> Marcar como atendido
+                            </button>
+                            <button th:if="${activo}" type="submit" name="nuevoEstado" value="CANCELADO"
+                                class="aa-btn aa-btn--danger" onclick="return confirm('¿Cancelar este ticket?');">
+                                <i class="bi bi-x-circle"></i> Cancelar ticket
+                            </button>
+                            <button th:unless="${activo}" type="submit" name="nuevoEstado" value="PENDIENTE"
+                                class="aa-btn aa-btn--outline-dark">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reabrir ticket
                             </button>
                         </form>
                     </div>

@@ -48,13 +48,7 @@
                         </a>
                     </li>
 
-                    <!-- 5. Bitácora Mantenimiento (TODOS LOS ROLES) -->
-                    <li class="nav-item"
-                        sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'TECNICO', 'ROLE_TECNICO', 'PERSONAL_SERVICIO_SOCIAL', 'ROLE_PERSONAL_SERVICIO_SOCIAL')">
-                        <a class="nav-link aa-nav-link" th:href="@{/mantenimientos}">
-                            <i class="bi bi-wrench me-1"></i> Bitácora Mantenimiento
-                        </a>
-                    </li>
+                    
 
                     <!-- 6. Usuarios (EXCLUSIVO ADMINISTRADOR - ACT-01) -->
                     <li class="nav-item" sec:authorize="hasAnyAuthority('ADMINISTRADOR', 'ROLE_ADMINISTRADOR')">

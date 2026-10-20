@@ -30,12 +30,8 @@
                 <a th:href="@{/reportes/nuevo(equipoId=${equipo.id})}" class="aa-btn aa-btn--danger aa-btn--auto aa-btn--sm">
                     <i class="bi bi-exclamation-octagon"></i> Reportar Falla
                 </a>
-                <a th:href="@{/mantenimientos/nuevo(equipoId=${equipo.id})}" class="aa-btn aa-btn--success aa-btn--auto aa-btn--sm">
-                    <i class="bi bi-tools"></i> Registrar Servicio
-                </a>
-                <a th:href="@{/mantenimientos(equipoId=${equipo.id})}" class="aa-btn aa-btn--outline-dark aa-btn--auto aa-btn--sm">
-                    <i class="bi bi-journal-text"></i> Ver Bitácora
-                </a>
+                
+                
                 <a th:href="@{/equipos/etiqueta/{id}(id=${equipo.id})}" class="aa-btn aa-btn--dark aa-btn--auto aa-btn--sm">
                     <i class="bi bi-qr-code-scan"></i> Imprimir Etiqueta QR
                 </a>
